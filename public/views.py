@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
 import stripe
@@ -24,10 +24,115 @@ def index(request):
 
 # Stripe
 # ----------------------------------
+"""
+Starting the Stripe CLI and connecting it to the webhook:
+https://stripe.com/docs/stripe-cli#forward-events
+Futher instructions in the stripe_webhook docstring
 
-def base_handle_webhook(request, event):
-    """This is not a view. Refer to stripe_webhook view"""
+Creating events:
+https://stripe.com/docs/stripe-cli#api-requests
+"""
+
+
+def base_handle_webhook(request: HttpRequest, event: stripe.Event):
+    """
+    THIS IS NOT A VIEW. Refer to stripe_webhook view.
+    Below are the event objects.
+    I advise you make a function and give it the parameters
+    as above (il.e. request and event).
+    """
     print(event)
+
+    payment_intent_obj = {
+        # https://stripe.com/docs/api/payment_intents/object
+        "id": "pi_1DbsKl2eZvKYlo2CLVsS86l8",
+        "object": "payment_intent",
+        "amount": 1000,
+        "amount_capturable": 0,
+        "amount_received": 0,
+        "application": None,
+        "application_fee_amount": None,
+        "canceled_at": None,
+        "cancellation_reason": None,
+        "capture_method": "automatic",
+        "charges": {
+            "object": "list",
+            "data": [],
+            "has_more": False,
+            "url": "/v1/charges?payment_intent=pi_1DbsKl2eZvKYlo2CLVsS86l8"
+        },
+        "client_secret": "pi_1DbsKl2eZvKYlo2CLVsS86l8_secret_NKw0ZjWEMDt6RX4s5o7yMPF7H",
+        "confirmation_method": "automatic",
+        "created": 1543508747,
+        "currency": "usd",
+        "customer": "cus_E40L3r3Exclknq",
+        "description": None,
+        "invoice": None,
+        "last_payment_error": None,
+        "livemode": False,
+        "metadata": {},
+        "next_action": None,
+        "on_behalf_of": None,
+        "payment_method": None,
+        "payment_method_options": {},
+        "payment_method_types": [
+            "card"
+        ],
+        "receipt_email": None,
+        "review": None,
+        "setup_future_usage": None,
+        "shipping": None,
+        "statement_descriptor": None,
+        "statement_descriptor_suffix": None,
+        "status": "requires_payment_method",
+        "transfer_data": None,
+        "transfer_group": None
+    }
+
+    payment_method_obj = {
+        # https://stripe.com/docs/api/payment_methods/object
+        "id": "pm_123456789",
+        "object": "payment_method",
+        "billing_details": {
+            "address": {
+                "city": None,
+                "country": None,
+                "line1": None,
+                "line2": None,
+                "postal_code": "94103",
+                "state": None
+            },
+            "email": "jenny@example.com",
+            "name": None,
+            "phone": "+15555555555"
+        },
+        "card": {
+            "brand": "visa",
+            "checks": {
+                "address_line1_check": None,
+                "address_postal_code_check": None,
+                "cvc_check": None
+            },
+            "country": "US",
+            "exp_month": 8,
+            "exp_year": 2021,
+            "fingerprint": "Xt5EWLLDS7FJjR1c",
+            "funding": "credit",
+            "generated_from": None,
+            "last4": "4242",
+            "three_d_secure_usage": {
+                "supported": True
+            },
+            "wallet": None
+        },
+        "created": 123456789,
+        "customer": None,
+        "livemode": False,
+        "metadata": {
+            "order_id": "123456789"
+        },
+        "type": "card"
+    }
 
 
 @require_http_methods(["POST"])
