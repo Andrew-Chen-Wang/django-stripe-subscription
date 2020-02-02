@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stripe.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'home.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

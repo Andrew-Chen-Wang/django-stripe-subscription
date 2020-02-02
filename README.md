@@ -42,7 +42,7 @@ Structure:
 │   ├── vars.py
 │   └── views.py
 ├── requirements.txt
-├── stripe
+├── home
 │   ├── __init__.py
 │   ├── asgi.py
 │   ├── settings.py

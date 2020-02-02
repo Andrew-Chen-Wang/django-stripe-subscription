@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import stripe
+from stripe.error import SignatureVerificationError
 
 
 def index(request):
@@ -23,6 +24,12 @@ def index(request):
 
 # Stripe
 # ----------------------------------
+
+def base_handle_webhook(request, event):
+    """This is not a view. Refer to stripe_webhook view"""
+    print(event)
+
+
 @require_http_methods(["POST"])
 @csrf_exempt
 def stripe_webhook(request):
@@ -34,6 +41,7 @@ def stripe_webhook(request):
     https://stripe.com/docs/stripe-cli
     Simply skip Step 3.
     Note: responses from your server are not returned to Stripe and won’t show up in the Dashboard.
+    So here's their GUI that monitors events: https://github.com/stripe/stripe-webhook-monitor
 
     This view also verifies that it's Stripe sending us the webhook.
     https://stripe.com/docs/webhooks/signatures
@@ -53,11 +61,12 @@ def stripe_webhook(request):
         )
     except ValueError as e:
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
+    except SignatureVerificationError as e:
         return HttpResponse(status=400)
 
     # Handle the DIFFERENT events
-    # In case you wanted a GUI monitoring events: https://github.com/stripe/stripe-webhook-monitor
+    # When customizing, I recommend you be modular with this:
+    # Create several different functions with the params: request and event.
     if event.type == "payment_intent.succeeded":
         payment_intent = event.data.object
         # contains a stripe.PaymentIntent: https://stripe.com/docs/api/payment_intents/object
@@ -68,6 +77,8 @@ def stripe_webhook(request):
         print("PaymentMethod was attached to a Customer")
     else:
         return HttpResponse(status=400)
+    # In case you wanted a GUI monitoring events: https://github.com/stripe/stripe-webhook-monitor
+    # since, with the stripe-cli, you won't be able to see test events in the Dashboard.
     return HttpResponse(status=200)
 
 
