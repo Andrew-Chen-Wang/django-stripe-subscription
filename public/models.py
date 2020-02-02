@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 
+class Profile(models.Model):
+    """
+    Extra information that isn't accessed as much as the User model.
+    This example code uses the Client + Server integration method because
+    we want to remember a customer_id from Stripe with our own server.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
 class MagazineTitles(models.Model):
     """
     These are simply magazine titles that a user can select

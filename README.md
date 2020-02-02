@@ -34,6 +34,7 @@ Structure:
 │   ├── admin.py
 │   ├── apps.py
 │   ├── migrations
+|   |   ├── ... other migrations
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
@@ -65,6 +66,12 @@ Note: **I have disabled the AUTH_PASSWORD_VALIDATORS** to make testing easier fo
 
 ---
 ### Notes
+I've left SEVERAL comments within the necessary code itself (e.g. views, settings, templates, models, etc.).
+
+If there are issues like in security, then write an issue on GitHub.
+
 - Stripe billing: https://stripe.com/docs/billing/lifecycle
-- Stripe subscriptions: https://stripe.com/docs/api/subscriptions/cancel
-- Quick-start Django login: 
+- Stripe subscriptions: 
+    - Sample JS code: https://github.com/stripe-samples/checkout-single-subscription
+    - https://stripe.com/docs/api/subscriptions/cancel
+- Quick-start Django login: https://docs.djangoproject.com/en/3.0/topics/auth/default/
